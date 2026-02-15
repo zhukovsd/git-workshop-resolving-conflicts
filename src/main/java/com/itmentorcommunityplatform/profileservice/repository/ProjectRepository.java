@@ -13,12 +13,17 @@ public interface ProjectRepository extends CrudRepository<Project, Long> {
 
     List<Project> findByAuthorTelegramUserId(Long authorTelegramUserId);
 
-    @Query("SELECT DISTINCT p.roadmap_project FROM Project p " +
-           "WHERE p.author_telegram_user_id = :userId")
+    @Query("""
+           SELECT DISTINCT p.roadmap_project 
+           FROM Project p  
+           WHERE p.author_telegram_user_id = :userId
+           """)
     Set<RoadmapProjectType> findProjectsNamesByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT DISTINCT p.programming_language FROM Project p " +
-           "WHERE p.author_telegram_user_id = :userId")
+    @Query("""
+           SELECT DISTINCT p.programming_language FROM Project p 
+           WHERE p.author_telegram_user_id = :userId
+           """)
     Set<String> findUsersProjectsLanguagesByUserId(@Param("userId") Long userId);
 
 }
