@@ -2,7 +2,7 @@ package com.itmentorcommunityplatform.profileservice.controller;
 
 import com.itmentorcommunityplatform.profileservice.docs.GetAllProfilesDocs;
 import com.itmentorcommunityplatform.profileservice.dto.response.AllProfilesPaginatedResponseDto;
-import com.itmentorcommunityplatform.profileservice.service.ProfileService;
+import com.itmentorcommunityplatform.profileservice.service.AdminProfileService;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ProfileAdminController {
 
-    private final ProfileService profileService;
+    private final AdminProfileService  adminProfileService;
 
     @GetMapping("/profiles")
     @GetAllProfilesDocs
@@ -35,7 +35,7 @@ public class ProfileAdminController {
         detailFilters.remove("page_size");
         detailFilters.remove("page_number");
 
-        AllProfilesPaginatedResponseDto allProfiles = profileService.getAllProfiles(pageSize, pageNumber, detailFilters);
+        AllProfilesPaginatedResponseDto allProfiles = adminProfileService.getAllProfiles(pageSize, pageNumber, detailFilters);
 
         return ResponseEntity.ok(allProfiles);
     }

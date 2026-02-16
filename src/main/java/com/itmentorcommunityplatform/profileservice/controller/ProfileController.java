@@ -5,7 +5,7 @@ import com.itmentorcommunityplatform.profileservice.docs.GetUserProfileByIdDocs;
 import com.itmentorcommunityplatform.profileservice.docs.UpdateCurrentProfileDocs;
 import com.itmentorcommunityplatform.profileservice.dto.request.ProfileUpdateRequestDto;
 import com.itmentorcommunityplatform.profileservice.dto.response.ProfileWithAchievementsResponseDto;
-import com.itmentorcommunityplatform.profileservice.service.ProfileService;
+import com.itmentorcommunityplatform.profileservice.service.CurrentProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +19,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProfileController {
 
-    private final ProfileService profileService;
+    private final CurrentProfileService currentProfileService;
 
     @GetMapping
     @GetCurrentProfileDocs
     public ResponseEntity<ProfileWithAchievementsResponseDto> getCurrentProfile(
             @RequestHeader("X-Telegram-User-Id") Long telegramUserId
     ) {
-        ProfileWithAchievementsResponseDto profileWithAchievementsResponseDto = profileService.getCurrentUserProfile(telegramUserId);
+        ProfileWithAchievementsResponseDto profileWithAchievementsResponseDto = currentProfileService.getCurrentUserProfile(telegramUserId);
         return ResponseEntity.ok(profileWithAchievementsResponseDto);
     }
 
@@ -42,16 +42,14 @@ public class ProfileController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "invalid telegram_url field in the body");
         }
 
-        ProfileWithAchievementsResponseDto response = profileService.updateCurrentProfile(telegramUserId, dto, telegramUsername.orElse(null));
-
+        ProfileWithAchievementsResponseDto response = currentProfileService.updateCurrentProfile(telegramUserId, dto, telegramUsername.orElse(null));
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
     @GetUserProfileByIdDocs
     public ResponseEntity<ProfileWithAchievementsResponseDto> getUserProfile(@PathVariable("id") Long profileId) {
-        ProfileWithAchievementsResponseDto userProfile = profileService.getUserProfile(profileId);
-
+        ProfileWithAchievementsResponseDto userProfile = currentProfileService.getUserProfile(profileId);
         return ResponseEntity.ok(userProfile);
     }
 }
