@@ -21,20 +21,8 @@ public class ProjectCreatedConsumer {
     @KafkaListener(topics = "${spring.kafka.topic.projects-project-created}", groupId = "profile-service-cg")
     public void consumeProjectCreatedEvent(ProjectCreatedEvent event) {
         log.info("ProjectCreated received: userId={}", event.getAuthorTelegramUserId());
-        log.debug("""
-             ProjectCreated fields:
-             author_telegram_user_id: {},
-             author_telegram_profile_url: {},
-             github_repository_url: {},
-             programming_language: {},
-             roadmap_project: {},
-             added_timestamp: {},
-             project_source_type: {}
-             """,
-                event.getAuthorTelegramUserId(),
-                event.getAuthorTelegramProfileUrl(), event.getGithubRepositoryUrl(),
-                event.getProgrammingLanguage(), event.getRoadmapProject(),
-                event.getAddedTimestamp(), event.getProjectSourceType());
+        log.debug("ProjectCreated payload: userId={}", event);
+
         try {
             profileDetailService.upsertGithubProfileUrl(event.getAuthorTelegramUserId(), event.getGithubRepositoryUrl());
             projectService.createdProject(event);
