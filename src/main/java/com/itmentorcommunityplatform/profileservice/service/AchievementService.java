@@ -9,8 +9,8 @@ import com.itmentorcommunityplatform.profileservice.domain.type.AchievementType;
 import com.itmentorcommunityplatform.profileservice.dto.event.ProjectCreatedEvent;
 import com.itmentorcommunityplatform.profileservice.dto.request.AchievementsVisibleRequestDto;
 import com.itmentorcommunityplatform.profileservice.dto.response.AchievementResponseDto;
-import com.itmentorcommunityplatform.profileservice.exception.ForbiddenException;
-import com.itmentorcommunityplatform.profileservice.exception.NotFoundException;
+import com.itmentorcommunityplatform.profileservice.exception.AchievementAccessDeniedException;
+import com.itmentorcommunityplatform.profileservice.exception.ProfileNotFoundException;
 import com.itmentorcommunityplatform.profileservice.repository.AchievementRepository;
 import com.itmentorcommunityplatform.profileservice.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +55,7 @@ public class AchievementService {
 
         Long profileId = profileRepository.findByTelegramUserId(telegramUserId)
                 .map(Profile::getId)
-                .orElseThrow(() -> new NotFoundException("Profile not found"));
+                .orElseThrow(() -> new ProfileNotFoundException("Profile not found"));
 
         Map<AchievementType, AchievementResponseDto> profileAchievements = achievementRepository.findAchievemetsByProfileId(profileId)
                 .stream()
@@ -124,7 +124,7 @@ public class AchievementService {
                 .findByProfileIdAndAchievementType(profileId, type)
                 .orElseThrow(() -> {
                     log.warn("User (profileId): {} tried to access achievement {} which they don't own", profileId, type);
-                    return new ForbiddenException("User does not own the achievement");
+                    return new AchievementAccessDeniedException("User does not own the achievement");
                 });
     }
 

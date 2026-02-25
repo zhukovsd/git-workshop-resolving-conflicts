@@ -1,7 +1,7 @@
 package com.itmentorcommunityplatform.profileservice.validator.impl;
 
 import com.itmentorcommunityplatform.profileservice.domain.type.ProfileDetailType;
-import com.itmentorcommunityplatform.profileservice.exception.BadRequestException;
+import com.itmentorcommunityplatform.profileservice.exception.ValidationException;
 import com.itmentorcommunityplatform.profileservice.validator.ProfileDetailValidator;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +22,7 @@ public class GithubProfileUrlValidator implements ProfileDetailValidator {
     @Override
     public void validate(String value) {
         if (value == null || !GITHUB_PATTERN.matcher(value).matches()) {
-            throw new BadRequestException("Github profile url incorrect");
+            throw new ValidationException("Github profile url incorrect");
         }
     }
 }

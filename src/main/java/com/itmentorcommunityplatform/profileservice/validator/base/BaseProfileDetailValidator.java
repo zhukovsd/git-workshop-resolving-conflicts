@@ -1,6 +1,6 @@
 package com.itmentorcommunityplatform.profileservice.validator.base;
 
-import com.itmentorcommunityplatform.profileservice.exception.BadRequestException;
+import com.itmentorcommunityplatform.profileservice.exception.ValidationException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,7 +18,7 @@ public class BaseProfileDetailValidator {
     public void validate(String detailName, String value) {
 
         if (value.length() > 255) {
-            throw new BadRequestException("Value of '" + detailName + "' exceeds max length 255");
+            throw new ValidationException("Value of '" + detailName + "' exceeds max length 255");
         }
     }
 }

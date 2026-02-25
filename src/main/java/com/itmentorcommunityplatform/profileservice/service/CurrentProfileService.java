@@ -5,7 +5,7 @@ import com.itmentorcommunityplatform.profileservice.domain.Profile;
 import com.itmentorcommunityplatform.profileservice.domain.ProfileDetail;
 import com.itmentorcommunityplatform.profileservice.dto.request.ProfileUpdateRequestDto;
 import com.itmentorcommunityplatform.profileservice.dto.response.ProfileWithAchievementsResponseDto;
-import com.itmentorcommunityplatform.profileservice.exception.NotFoundException;
+import com.itmentorcommunityplatform.profileservice.exception.ProfileNotFoundException;
 import com.itmentorcommunityplatform.profileservice.mapper.ProfileMapper;
 import com.itmentorcommunityplatform.profileservice.metrics.ProfileMetrics;
 import com.itmentorcommunityplatform.profileservice.repository.AchievementRepository;
@@ -44,7 +44,7 @@ public class CurrentProfileService {
                 }
 
                 Profile profile = profileRepository.findByTelegramUserId(telegramUserId)
-                        .orElseThrow(() -> new NotFoundException("Profile not found"));
+                        .orElseThrow(() -> new ProfileNotFoundException("Profile not found"));
 
                 List<Achievement> achievements = achievementRepository.findAllByProfileIdAndPubliclyVisibleTrue(profile.getId());
 
@@ -68,7 +68,7 @@ public class CurrentProfileService {
             log.info("Fetching profile for telegramUserId: {}", telegramUserId);
             try {
                 Profile profile = profileRepository.findByTelegramUserId(telegramUserId)
-                        .orElseThrow(() -> new NotFoundException("Profile not found"));
+                        .orElseThrow(() -> new ProfileNotFoundException("Profile not found"));
 
                 List<Achievement> achievements = achievementRepository.findAllByProfileIdAndPubliclyVisibleTrue(profile.getId());
 
@@ -88,7 +88,7 @@ public class CurrentProfileService {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> {
                     log.warn("Profile with id: {} not found", profileId);
-                    return new NotFoundException("Profile not found");
+                    return new ProfileNotFoundException("Profile not found");
                 });
 
         List<Achievement> achievements = achievementRepository.findAllByProfileIdAndPubliclyVisibleTrue(profileId);

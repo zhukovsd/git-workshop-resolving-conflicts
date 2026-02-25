@@ -14,22 +14,71 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ErrorResponseDto> handleForbiddenException(ForbiddenException ex) {
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDto> handleAccessDeniedException(AccessDeniedException ex) {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponseDto(ex.getMessage()));
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponseDto> handleNotFoundException(NotFoundException ex) {
-        return  ResponseEntity
+    @ExceptionHandler(InvalidProfileUpdateException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidProfileUpdateException(InvalidProfileUpdateException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponseDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ProfileNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleProfileNotFoundException(ProfileNotFoundException ex) {
+        return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponseDto(ex.getMessage()));
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponseDto> handleBadRequestException(BadRequestException ex) {
+    @ExceptionHandler(AchievementAccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDto> handleAchievementAccessException(AchievementAccessDeniedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponseDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidPaginationException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidPaginationException(InvalidPaginationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(MissingTelegramUserIdException.class)
+    public ResponseEntity<ErrorResponseDto> handleMissingTelegramUserIdException(MissingTelegramUserIdException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(MissingProfileDetailsException.class)
+    public ResponseEntity<ErrorResponseDto> handleMissingProfileDetailsException(MissingProfileDetailsException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(EmptyProfileDetailsException.class)
+    public ResponseEntity<ErrorResponseDto> handleEmptyProfileDetailsException(EmptyProfileDetailsException ex) {
+        return  ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidProfileDetailsException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidProfileDetailsException(InvalidProfileDetailsException ex) {
+        return  ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponseDto> handleValidationException(ValidationException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponseDto(ex.getMessage()));

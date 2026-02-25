@@ -2,7 +2,7 @@ package com.itmentorcommunityplatform.profileservice.controller;
 
 import com.itmentorcommunityplatform.profileservice.docs.GetAllProfilesDocs;
 import com.itmentorcommunityplatform.profileservice.dto.response.AllProfilesPaginatedResponseDto;
-import com.itmentorcommunityplatform.profileservice.exception.ForbiddenException;
+import com.itmentorcommunityplatform.profileservice.exception.AccessDeniedException;
 import com.itmentorcommunityplatform.profileservice.service.AdminProfileService;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class ProfileAdminController {
 
 
         if (roles == null || roles.stream().noneMatch(r -> r.equalsIgnoreCase("ADMIN"))) {
-            throw new ForbiddenException("Access denied");
+            throw new AccessDeniedException("Access denied");
         }
 
         detailFilters.remove("page_size");
