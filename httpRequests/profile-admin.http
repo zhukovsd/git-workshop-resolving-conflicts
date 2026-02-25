@@ -1,4 +1,4 @@
- ### 1. Успешное получение списка профилей с пагинацией (200 OK)
+### 1. Успешное получение списка профилей с пагинацией (200 OK)
 GET http://localhost:8083/api/profile/admin/profiles?page_number=1&page_size=10
 X-User-Roles: ADMIN
 
