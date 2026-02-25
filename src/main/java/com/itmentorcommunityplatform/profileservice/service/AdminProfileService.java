@@ -3,12 +3,11 @@ package com.itmentorcommunityplatform.profileservice.service;
 import com.itmentorcommunityplatform.profileservice.domain.Profile;
 import com.itmentorcommunityplatform.profileservice.dto.response.AllProfilesPaginatedResponseDto;
 import com.itmentorcommunityplatform.profileservice.dto.response.ProfileWithRolesResponseDto;
+import com.itmentorcommunityplatform.profileservice.exception.BadRequestException;
 import com.itmentorcommunityplatform.profileservice.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -54,7 +53,7 @@ public class AdminProfileService {
         totalPageCount = Math.max((int) Math.ceil((double) allProfilesCount / pageSize), 1);
 
         if (pageNumber > totalPageCount) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Page number is greater than total page count");
+            throw new BadRequestException("Page number is greater than total page count");
         }
 
         List<ProfileWithRolesResponseDto> items;

@@ -1,8 +1,6 @@
 package com.itmentorcommunityplatform.profileservice.exception;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.itmentorcommunityplatform.profileservice.domain.type.AchievementType;
+import com.itmentorcommunityplatform.profileservice.dto.response.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,65 +9,71 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<Map<String, String>> handleStatusException(ResponseStatusException ex) {
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponseDto> handleForbiddenException(ForbiddenException ex) {
         return ResponseEntity
-                .status(ex.getStatusCode())
-                .body(Map.of("message", ex.getReason() != null ? ex.getReason() : "Unknown error"));
+                .status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponseDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleNotFoundException(NotFoundException ex) {
+        return  ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponseDto(ex.getMessage()));
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponseDto> handleBadRequestException(BadRequestException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDto(ex.getMessage()));
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
-    public ResponseEntity<Map<String, String>> handleMissingHeader(MissingRequestHeaderException ex) {
+    public ResponseEntity<ErrorResponseDto> handleMissingHeader(MissingRequestHeaderException ex) {
+        log.warn("The required title is missing: {}", ex.getHeaderName());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of("message", "The required title is missing: " + ex.getHeaderName()));
+                .body(new ErrorResponseDto("Unauthorized"));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Map<String, Object>> handleJsonNotValidField(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ErrorResponseDto> handleJsonNotValidField(HttpMessageNotReadableException ex) {
         Throwable cause = ex.getCause();
-        String message = switch (cause) {
-            case MismatchedInputException ignored -> "Invalid type for field";
-            case JsonParseException ignored -> "Malformed JSON";
-            default -> null;
-        };
-        if (message != null) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("message", message));
+        if (cause != null) {
+            log.warn("Invalid request body. CauseType={}, CauseMessage={}",
+                    cause.getClass().getSimpleName(), cause.getMessage(), ex);
+        } else {
+            log.warn("Invalid request body. Cause is null", ex);
         }
-        throw ex;
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDto("Invalid request"));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> handleAll(Exception ex) {
+    public ResponseEntity<ErrorResponseDto> handleAll(Exception ex) {
+        log.error("Unhandled exception", ex);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("message", "Unknown error: " + ex.getMessage()));
+                .body(new ErrorResponseDto("Internal server error"));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<Map<String, String>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
-        if (ex.getParameter().getParameterType().equals(AchievementType.class)) {
-            Object achievementType = ex.getValue();
-            log.warn("Unknown achievement type: {}", achievementType);
+    public ResponseEntity<ErrorResponseDto> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        log.warn("Invalid parameter. name={}, type={}, value={}",
+                ex.getName(),
+                ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown",
+                ex.getValue());
 
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("message", "Unknown achievement type: %s".formatted(achievementType)));
-        } else {
-            log.warn("Invalid parameter type: {}", ex.getParameter().getParameterType());
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("message", "Invalid parameter type. Please check the request."));
-        }
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDto("Invalid request"));
     }
 }

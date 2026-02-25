@@ -8,13 +8,12 @@ import com.itmentorcommunityplatform.profileservice.domain.type.Role;
 import com.itmentorcommunityplatform.profileservice.dto.external.UserWithRolesResponseDto;
 import com.itmentorcommunityplatform.profileservice.dto.response.ProfileDetailsResponseDto;
 import com.itmentorcommunityplatform.profileservice.dto.response.ProfileWithRolesResponseDto;
+import com.itmentorcommunityplatform.profileservice.exception.BadRequestException;
 import com.itmentorcommunityplatform.profileservice.validator.base.BaseProfileDetailValidator;
 import com.itmentorcommunityplatform.profileservice.validator.registry.ProfileDetailValidatorRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -80,15 +79,15 @@ public class ProfileHelperService {
 
     public void validateDetails(Map<String, String> details) {
         if (details == null || details.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Profile details should not be empty");
+            throw new BadRequestException("Profile details should not be empty");
         }
 
         details.forEach((detailName, detailValue) -> {
             ProfileDetailType type = ProfileDetailType.fromName(detailName)
-                    .orElseThrow(() -> new ResponseStatusException(
-                            HttpStatus.BAD_REQUEST,
-                            "Unknown detail name: " + detailName
-                    ));
+                    .orElseThrow(() -> {
+                        log.warn("Unknown detail name: {}", detailName);
+                        return new BadRequestException("Unknown detail name");
+                    });
 
             baseDetailValidator.validate(detailName, detailValue);
 

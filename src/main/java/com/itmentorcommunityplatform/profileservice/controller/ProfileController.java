@@ -5,12 +5,11 @@ import com.itmentorcommunityplatform.profileservice.docs.GetUserProfileByIdDocs;
 import com.itmentorcommunityplatform.profileservice.docs.UpdateCurrentProfileDocs;
 import com.itmentorcommunityplatform.profileservice.dto.request.ProfileUpdateRequestDto;
 import com.itmentorcommunityplatform.profileservice.dto.response.ProfileWithAchievementsResponseDto;
+import com.itmentorcommunityplatform.profileservice.exception.ForbiddenException;
 import com.itmentorcommunityplatform.profileservice.service.CurrentProfileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -39,7 +38,7 @@ public class ProfileController {
 
 
         if (dto.getDetails() != null && dto.getDetails().containsKey("telegram_url")) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "invalid telegram_url field in the body");
+            throw new ForbiddenException("invalid telegram_url field in the body");
         }
 
         ProfileWithAchievementsResponseDto response = currentProfileService.updateCurrentProfile(telegramUserId, dto, telegramUsername.orElse(null));

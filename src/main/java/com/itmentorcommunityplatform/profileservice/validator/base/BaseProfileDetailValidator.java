@@ -1,8 +1,7 @@
 package com.itmentorcommunityplatform.profileservice.validator.base;
 
-import org.springframework.http.HttpStatus;
+import com.itmentorcommunityplatform.profileservice.exception.BadRequestException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 /**
  * <p>Базовый валидатор.</p>
@@ -19,9 +18,7 @@ public class BaseProfileDetailValidator {
     public void validate(String detailName, String value) {
 
         if (value.length() > 255) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Value of '" + detailName + "' exceeds max length 255");
+            throw new BadRequestException("Value of '" + detailName + "' exceeds max length 255");
         }
     }
 }

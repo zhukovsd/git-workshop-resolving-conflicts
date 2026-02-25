@@ -5,16 +5,15 @@ import com.itmentorcommunityplatform.profileservice.domain.Profile;
 import com.itmentorcommunityplatform.profileservice.domain.ProfileDetail;
 import com.itmentorcommunityplatform.profileservice.dto.request.ProfileUpdateRequestDto;
 import com.itmentorcommunityplatform.profileservice.dto.response.ProfileWithAchievementsResponseDto;
+import com.itmentorcommunityplatform.profileservice.exception.NotFoundException;
 import com.itmentorcommunityplatform.profileservice.mapper.ProfileMapper;
 import com.itmentorcommunityplatform.profileservice.metrics.ProfileMetrics;
 import com.itmentorcommunityplatform.profileservice.repository.AchievementRepository;
 import com.itmentorcommunityplatform.profileservice.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -45,7 +44,7 @@ public class CurrentProfileService {
                 }
 
                 Profile profile = profileRepository.findByTelegramUserId(telegramUserId)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
+                        .orElseThrow(() -> new NotFoundException("Profile not found"));
 
                 List<Achievement> achievements = achievementRepository.findAllByProfileIdAndPubliclyVisibleTrue(profile.getId());
 
@@ -69,7 +68,7 @@ public class CurrentProfileService {
             log.info("Fetching profile for telegramUserId: {}", telegramUserId);
             try {
                 Profile profile = profileRepository.findByTelegramUserId(telegramUserId)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
+                        .orElseThrow(() -> new NotFoundException("Profile not found"));
 
                 List<Achievement> achievements = achievementRepository.findAllByProfileIdAndPubliclyVisibleTrue(profile.getId());
 
@@ -87,10 +86,10 @@ public class CurrentProfileService {
     public ProfileWithAchievementsResponseDto getUserProfile(Long profileId) {
 
         Profile profile = profileRepository.findById(profileId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Profile with id: %s not found".formatted(profileId)
-                ));
+                .orElseThrow(() -> {
+                    log.warn("Profile with id: {} not found", profileId);
+                    return new NotFoundException("Profile not found");
+                });
 
         List<Achievement> achievements = achievementRepository.findAllByProfileIdAndPubliclyVisibleTrue(profileId);
 

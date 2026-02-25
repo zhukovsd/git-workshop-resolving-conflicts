@@ -2,13 +2,12 @@ package com.itmentorcommunityplatform.profileservice.controller;
 
 import com.itmentorcommunityplatform.profileservice.docs.GetAllProfilesDocs;
 import com.itmentorcommunityplatform.profileservice.dto.response.AllProfilesPaginatedResponseDto;
+import com.itmentorcommunityplatform.profileservice.exception.ForbiddenException;
 import com.itmentorcommunityplatform.profileservice.service.AdminProfileService;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class ProfileAdminController {
 
 
         if (roles == null || roles.stream().noneMatch(r -> r.equalsIgnoreCase("ADMIN"))) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied: missing ADMIN role in X-User-Roles header");
+            throw new ForbiddenException("Access denied");
         }
 
         detailFilters.remove("page_size");

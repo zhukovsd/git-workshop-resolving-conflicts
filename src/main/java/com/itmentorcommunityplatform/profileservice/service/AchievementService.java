@@ -9,15 +9,15 @@ import com.itmentorcommunityplatform.profileservice.domain.type.AchievementType;
 import com.itmentorcommunityplatform.profileservice.dto.event.ProjectCreatedEvent;
 import com.itmentorcommunityplatform.profileservice.dto.request.AchievementsVisibleRequestDto;
 import com.itmentorcommunityplatform.profileservice.dto.response.AchievementResponseDto;
+import com.itmentorcommunityplatform.profileservice.exception.ForbiddenException;
+import com.itmentorcommunityplatform.profileservice.exception.NotFoundException;
 import com.itmentorcommunityplatform.profileservice.repository.AchievementRepository;
 import com.itmentorcommunityplatform.profileservice.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ public class AchievementService {
 
         Long profileId = profileRepository.findByTelegramUserId(telegramUserId)
                 .map(Profile::getId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
+                .orElseThrow(() -> new NotFoundException("Profile not found"));
 
         Map<AchievementType, AchievementResponseDto> profileAchievements = achievementRepository.findAchievemetsByProfileId(profileId)
                 .stream()
@@ -124,8 +124,7 @@ public class AchievementService {
                 .findByProfileIdAndAchievementType(profileId, type)
                 .orElseThrow(() -> {
                     log.warn("User (profileId): {} tried to access achievement {} which they don't own", profileId, type);
-                    return new ResponseStatusException(HttpStatus.FORBIDDEN,
-                            "User (profileId) %d does not own the achievement %s".formatted(profileId, type));
+                    return new ForbiddenException("User does not own the achievement");
                 });
     }
 

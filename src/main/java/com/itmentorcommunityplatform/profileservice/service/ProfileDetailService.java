@@ -4,14 +4,13 @@ package com.itmentorcommunityplatform.profileservice.service;
 import com.itmentorcommunityplatform.profileservice.domain.Profile;
 import com.itmentorcommunityplatform.profileservice.domain.ProfileDetail;
 import com.itmentorcommunityplatform.profileservice.domain.type.ProfileDetailType;
+import com.itmentorcommunityplatform.profileservice.exception.NotFoundException;
 import com.itmentorcommunityplatform.profileservice.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -22,7 +21,7 @@ public class ProfileDetailService {
 
     public void upsertGithubProfileUrl(Long telegramUserId, String githubUrl) {
         Profile profile = profileRepository.findByTelegramUserId(telegramUserId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
+                .orElseThrow(() -> new NotFoundException("Profile not found"));
         Set<ProfileDetail> profileDetails = profile.getDetails();
 
         boolean githubAlreadyUpToDate = profileDetails.stream()

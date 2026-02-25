@@ -5,13 +5,12 @@ import com.itmentorcommunityplatform.profileservice.domain.ProfileDetail;
 import com.itmentorcommunityplatform.profileservice.domain.type.ProfileDetailType;
 import com.itmentorcommunityplatform.profileservice.dto.event.ProjectCreatedEvent;
 import com.itmentorcommunityplatform.profileservice.dto.event.UserCreatedEvent;
+import com.itmentorcommunityplatform.profileservice.exception.NotFoundException;
 import com.itmentorcommunityplatform.profileservice.repository.ProfileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,8 +98,7 @@ public class ProfileService {
         return profileRepository.findByTelegramUserId(telegramUserId)
                 .orElseThrow(() -> {
                     log.warn("Profile not found for telegramUserId: {}", telegramUserId);
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND,
-                            "Profile with Telegram-User-Id %s does not exist".formatted(telegramUserId));
+                    return new NotFoundException("Profile not found");
                 });
     }
 }

@@ -4,16 +4,16 @@ import com.itmentorcommunityplatform.profileservice.domain.Profile;
 import com.itmentorcommunityplatform.profileservice.domain.ProfileDetail;
 import com.itmentorcommunityplatform.profileservice.dto.request.ProfileUpsertInternalRequestDto;
 import com.itmentorcommunityplatform.profileservice.dto.response.ProfileWithTelegramIdResponseDto;
+import com.itmentorcommunityplatform.profileservice.exception.BadRequestException;
+import com.itmentorcommunityplatform.profileservice.exception.NotFoundException;
 import com.itmentorcommunityplatform.profileservice.mapper.ProfileMapper;
 import com.itmentorcommunityplatform.profileservice.repository.ProfileRepository;
 import com.itmentorcommunityplatform.profileservice.validator.impl.GithubProfileUrlValidator;
 import com.itmentorcommunityplatform.profileservice.validator.impl.TelegramProfileUrlValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
 import java.util.Map;
@@ -38,11 +38,11 @@ public class InternalProfileService {
 
         Long telegramUserId = dto.telegramUserId();
         if (telegramUserId == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "'telegram_user_id' must be provided");
+            throw new BadRequestException("'telegram_user_id' must be provided");
         }
 
         if (dto.details() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "'details' must be provided");
+            throw new BadRequestException("'details' must be provided");
         }
         Map<String, String> newDetailsMap = dto.details().getMap();
         profileHelperService.validateDetails(newDetailsMap);
@@ -71,10 +71,11 @@ public class InternalProfileService {
         log.info("Searching profile by GitHub URL: {}", gitHubUrl);
 
         Profile profile = profileRepository.findProfileByGitHubUrl(gitHubUrl)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Profile with URL: %s not found".formatted(gitHubUrl)
-                ));
+                .orElseThrow(() -> {
+                    log.warn("Profile with URL: {} not found", gitHubUrl);
+                    return new NotFoundException("Profile not found");
+                });
+
 
         return profileMapper.mapToProfileWithTelegramIdDto(profile.getTelegramUserId(), profile.getDetails());
     }
@@ -85,9 +86,11 @@ public class InternalProfileService {
 
         log.info("Searching profile by Telegram URL: {}", tgUrl);
 
-        Profile profile = profileRepository.findProfileByTgUrl(tgUrl).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Profile with given Telegram URL not found"));
+        Profile profile = profileRepository.findProfileByTgUrl(tgUrl)
+                .orElseThrow(() -> {
+                    log.warn("Profile with URL: {} not found", tgUrl);
+                    return new NotFoundException("Profile not found");
+                });
 
         return profileMapper.mapToProfileWithTelegramIdDto(profile.getTelegramUserId(), profile.getDetails());
     }

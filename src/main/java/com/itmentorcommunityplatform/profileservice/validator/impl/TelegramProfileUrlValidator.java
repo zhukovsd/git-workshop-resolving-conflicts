@@ -1,14 +1,13 @@
 package com.itmentorcommunityplatform.profileservice.validator.impl;
 
 import com.itmentorcommunityplatform.profileservice.domain.type.ProfileDetailType;
+import com.itmentorcommunityplatform.profileservice.exception.BadRequestException;
 import com.itmentorcommunityplatform.profileservice.validator.ProfileDetailValidator;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.regex.Pattern;
 
-import static com.itmentorcommunityplatform.profileservice.domain.type.ProfileDetailType.*;
+import static com.itmentorcommunityplatform.profileservice.domain.type.ProfileDetailType.TELEGRAM_URL;
 
 @Component
 public class TelegramProfileUrlValidator implements ProfileDetailValidator {
@@ -23,7 +22,7 @@ public class TelegramProfileUrlValidator implements ProfileDetailValidator {
     @Override
     public void validate(String value) {
         if (value == null || !TELEGRAM_PATTERN.matcher(value).matches()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Telegram profile url incorrect");
+            throw new BadRequestException("Telegram profile url incorrect");
         }
     }
 }
