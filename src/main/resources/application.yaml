@@ -13,6 +13,9 @@ spring:
     consumer:
       group-id: profile-service-group
       auto-offset-reset: earliest
+    topic:
+      projects-project-created: projects.project.created
+      auth-user-created: auth.user.created
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml

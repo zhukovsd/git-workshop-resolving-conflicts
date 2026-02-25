@@ -11,6 +11,9 @@ spring:
 
   kafka:
     bootstrap-servers: kafka:9092
+    topic:
+      projects-project-created: staging.projects.project.created
+      auth-user-created: staging.auth.user.created
 
 feign:
   client:
