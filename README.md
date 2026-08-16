@@ -1,34 +1,21 @@
-Profile Service
-===============================================================
+# Воркшоп по git - решение git конфликтов
 
-### Основная информация
-Сервис реализует работу с профилем пользователя, который включает в себя `username`, `telegram account`,
-`github account`, `labels` для роли пользователя(студент, ментор и т.д.) и его ачивок, ссылки на сданные проекты роадмапа,
-ссылки на сделанные ревью проектов других пользователей и т.д.
+В рамках командной разработки часто возникают конфликты между ветками. Необходимо уметь их решать. В идеале, опираясь на тесты и CI/CD пайплайн, который должен успешно пройти.
 
-Сервис имеет свою
-[базу данных](https://github.com/it-mentor-community-platform/meta/blob/main/system-analytics/services/profile-service/index.md#%D1%81%D1%85%D0%B5%D0%BC%D0%B0-%D0%B1%D0%B4)
-для хранения деталей профиля пользователя.
+Данный кейс подразумевает знание Java/Spring. Если вы пишете на другом языке, или не хотите разбираться с сутью кода, можете номинально решить конфликты, чтобы приём pull request стал возможным. 
 
-Данные о `id` текущего пользователя и его роли сервис получает из
-[кастомных заголовков](https://github.com/it-mentor-community-platform/meta/blob/main/system-analytics/services/gateway/index.md#%D0%BF%D1%80%D0%B0%D0%B2%D0%B8%D0%BB%D0%B0-security)
-входящего запроса.
+Контекст:
+- В проекте 2 ветки, `dev` и `refactor/code-style-72`.
+- Необходимо перенести изменения из `refactor/code-style-72` в `dev`, но со времени создания ветки `refactor/code-style-72`, ветка `dev` уже ушла вперёд 
 
-### Используемый стек
-- Spring Boot 3
-- Spring Data JDBC
-- Spring Kafka
-- Liquibase
+Суть задачи:
+- Создать pull request из `refactor/code-style-72` в `dev`. Увидеть, что слияние невозможно
+- Локально сделать merge из `dev` в `refactor/code-style-72`. Решить конфликты. Удостовериться, что тесты успешно проходят - `./gradlew test`
+- Сделать push, принять pull request. Удостовериться, что GitHub Action пайплайн успешно исполнен
 
-### Локальный запуск и тестирование   
-- Через консоль
-```bash
-    ./gradlew bootRun --args='--spring.profiles.active=ide'
-```
+## Как пользоваться
 
-- В IntelliJ IDEA
-  * Run -> Edit Configurations....
-  * В поле Active profiles введите имя профиля: `ide`
+- Сделайте fork данного репозитория
+- Склонируйте локально
 
-### Ссылки на репозиторий документации
-- [Системная аналитика Profile Service](https://github.com/it-mentor-community-platform/meta/blob/main/system-analytics/services/profile-service/index.md)
+Важно - по-умолчанию в GitHub отключены CI/CD пайплайны у форков. Необходимо зайти в раздел Actions вашего форка на GitHub, и включить их.
